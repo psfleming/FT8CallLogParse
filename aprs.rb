@@ -3,11 +3,10 @@ require 'file/tail'
 require 'socket'
 require 'maidenhead'
 
-station_call = "YOURCALL"
-ft8log = "/home/pi/.local/share/FT8Call/ALL.TXT"
-aprs_server = "rotate.aprs2.net"
-version = "0.1"
-
+STATIONCALL = "YOURCALL"
+FT8LOG = "/home/pi/.local/share/FT8Call/ALL.TXT"
+APRSSERVER = "rotate.aprs2.net"
+VERSION = "0.1"
 
 ## class
 class Aprs
@@ -114,20 +113,20 @@ class Aprs
     lat = latlon.split(',')[0].strip
     lon = latlon.split(',')[1].strip
     formatted_loc = "=#{self.dec_toaprs(lat, lon)}-"
-    self.packet(formatted_loc, msg)
+    self.packet(call, formatted_loc, msg)
   end
 
 end
 ## end class
 
-def send_aprsdata(shash, key, aprs_server, station_call, version)
+def send_aprsdata(shash, key)
   puts "raw aprs string: #{shash[key]}"
   call = shash[key].split(':')[1].strip
   grid = shash[key].split(':')[2].strip
   puts "call: #{call}"
   puts "grid: #{grid}"
 
-  aprs = Aprs.new(aprs_server, 14580, station_call, version)
+  aprs = Aprs.new(APRSSERVER, 14580, STATIONCALL, VERSION)
   aprs.connect
   aprs.report_loc(call, grid, "FT8Call")
 
@@ -154,7 +153,7 @@ def check_buffer(rxbuff, match)
       puts "End of APRS tag found: #{value}"
       # send aprs packet and clear buffer element
       begin
-        send_aprsdata(rxbuff,match, aprs_server, station_call, version)
+        send_aprsdata(rxbuff,match)
       rescue
         puts "error sending aprs packet: #{value}"
       end
@@ -187,7 +186,7 @@ end
 # tail file and look for APRS tags
 rxbuff = Hash.new
 
-File::Tail::Logfile.open(ft8log) do |log|
+File::Tail::Logfile.open(FT8LOG) do |log|
   log.backward(1).tail do |line|
 
     puts "new log line: #{line}"
