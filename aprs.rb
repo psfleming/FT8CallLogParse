@@ -3,7 +3,11 @@ require 'file/tail'
 require 'socket'
 require 'maidenhead'
 
+station_call = "KI6SSI"
 ft8log = "/home/pi/.local/share/FT8Call/ALL.TXT"
+aprs_server = "rotate.aprs2.net"
+version = "0.1"
+
 
 ## class
 class Aprs
@@ -107,11 +111,9 @@ class Aprs
 
   def report_loc(call, maiden, msg)
     latlon = Maidenhead.to_latlon(maiden).to_s().tr('[]','')
-#    puts latlon
     lat = latlon.split(',')[0].strip
     lon = latlon.split(',')[1].strip
     formatted_loc = "=#{self.dec_toaprs(lat, lon)}-"
-#    puts "self.packet(#{formatted_loc}, #{msg})"
     self.packet(formatted_loc, msg)
   end
 
@@ -125,7 +127,7 @@ def send_aprsdata(shash, key)
   puts "call: #{call}"
   puts "grid: #{grid}"
 
-  aprs = Aprs.new("rotate.aprs2.net", 14580, "KI6SSI", "0.1")
+  aprs = Aprs.new(aprs_server, 14580, station_call, version)
   aprs.connect
   aprs.report_loc(call, grid, "FT8Call")
 
@@ -152,6 +154,19 @@ def trim_failed(mlist)
   end
 end
 
+def getDataString(logline)
+  datastring = []
+  # get all txt right of ~, won't work if ~ in data string
+  # example "222345   8  0.2  575 ~  rCwmrrZ+-ki7         1    AP:KI6SSI:"
+  right_txt = logline.split('~')[1]
+  right_txt.split().each_with_index do |val, index|
+    if index > 1 then
+      datastring << val
+    end
+  end
+  return datastring.join(" ")
+end
+
 # tail file and look for APRS tags
 rxbuff = Hash.new
 
@@ -164,25 +179,26 @@ File::Tail::Logfile.open(ft8log) do |log|
     if line.split('~')[1] then
         rxfreq = line.split()[3].strip.to_i
         match = get_freq_match(rxbuff, rxfreq)
+        datastr = getDataString(line)
 
         # if starts with AP:
         # add to buffer {rxfreq,message}
-        if line.split('~')[1].strip.match(/^AP:/)
+        if datastr.match(/^AP:/)
           puts "Start of APRS tag found"
-          rxbuff.store(rxfreq, line.split('~')[1].strip)  
+          rxbuff.store(rxfreq, datastr)  
 
         # if there is already data for this freq in buffer
         elsif !match.nil?
           # puts match
           # look for end of APRS message
-          if line.split('~')[1].strip.include? ":RS"
+          if datastr.include? ":RS"
             puts "End of APRS tag found"
-            rxbuff.store(match,rxbuff[match] + line.split('~')[1].strip)
+            rxbuff.store(match,rxbuff[match] + datastr)
             # send aprs packet and clear buffer element
             send_aprsdata(rxbuff,match)
           else
             # keep appending if we are in the middle of APRS message
-            rxbuff.store(match,rxbuff[match] + line.split('~')[1].strip)
+            rxbuff.store(match,rxbuff[match] + datastr)
           end
 
         end
@@ -193,14 +209,3 @@ File::Tail::Logfile.open(ft8log) do |log|
   end
 end
 
-
-## 
-#latlon = Maidenhead.to_latlon("CM98lp06jv").to_s().tr('[]','')
-#lat = latlon.split(',')[0].strip
-#lon = latlon.split(',')[1].strip
-#puts Aprs.dec_toaprs(lat, lon)
-#aprs = Aprs.new("rotate.aprs2.net", 14580, "KI6SSI", "0.1")
-#aprs.connect #connects to aprs network
-#aprs.report_loc("KI6SSI", "CM98lp06iv", "FT8Call")
-#  aprs.packet("=3839.22N/12104.81W-", "FT8Call")
-#puts aprs.passcode("ki6ssi")
