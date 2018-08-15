@@ -11,3 +11,8 @@ Edit `station_call` to your station
 Edit `ft8log` to where your FT8Call log is, e.g. `/home/pi/.local/share/FT8Call/ALL.TXT`
 
 Run with `ruby aprs.rb`
+
+### Sending position report
+In the outgoing message box type `AP:<your call>:<your grid any length>:RS`
+
+Exmple: `AP:KI6SSI:CM98LP:RS`
