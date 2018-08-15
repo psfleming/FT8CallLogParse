@@ -151,7 +151,7 @@ def check_buffer(rxbuff, match)
 
     # look for end of APRS message
     if value.include? ":RS"
-      puts "End of APRS tag found, sending: #{value}"
+      puts "End of APRS tag found: #{value}"
       # send aprs packet and clear buffer element
       begin
         send_aprsdata(rxbuff,match, aprs_server, station_call, version)
