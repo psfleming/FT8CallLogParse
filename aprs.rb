@@ -120,7 +120,7 @@ class Aprs
 end
 ## end class
 
-def send_aprsdata(shash, key)
+def send_aprsdata(shash, key, aprs_server, station_call, version)
   puts "raw aprs string: #{shash[key]}"
   call = shash[key].split(':')[1].strip
   grid = shash[key].split(':')[2].strip
@@ -195,7 +195,7 @@ File::Tail::Logfile.open(ft8log) do |log|
             puts "End of APRS tag found"
             rxbuff.store(match,rxbuff[match] + datastr)
             # send aprs packet and clear buffer element
-            send_aprsdata(rxbuff,match)
+            send_aprsdata(rxbuff,match, aprs_server, station_call, version)
           else
             # keep appending if we are in the middle of APRS message
             rxbuff.store(match,rxbuff[match] + datastr)
