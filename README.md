@@ -13,6 +13,6 @@ Edit `ft8log` to where your FT8Call log is, e.g. `/home/pi/.local/share/FT8Call/
 Run with `ruby aprs.rb`
 
 ### Sending position report
-In the outgoing message box type `AP:<your call>:<your grid any length>:RS`
+In the outgoing message box in FT8Call type `AP:<your call>:<your grid any length>:RS`
 
 Exmple: `AP:KI6SSI:CM98LP:RS`
