@@ -118,10 +118,10 @@ class Aprs
 end
 ## end class
 
-def send_aprsdata(shash, key)
-  puts "raw aprs string: #{shash[key]}"
-  call = shash[key].split(':')[1].strip
-  grid = shash[key].split(':')[2].strip
+def send_aprsdata(rxbuff, key)
+  puts "raw aprs string: #{rxbuff[key]}"
+  call = rxbuff[key].split(':')[1].strip
+  grid = rxbuff[key].split(':')[2].strip
   puts "call: #{call}"
   puts "grid: #{grid}"
 
@@ -129,8 +129,6 @@ def send_aprsdata(shash, key)
   aprs.connect
   aprs.report_loc(call, grid, "FT8Call")
 
-  # clear hash element
-  shash.delete(key)
 end
 
 def get_freq_match(mlist, freq)
