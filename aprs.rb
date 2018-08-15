@@ -144,13 +144,24 @@ def get_freq_match(mlist, freq)
   return nil
 end
 
-# trim failed aprs messages
-def trim_failed(mlist)
+# check buffer for complete messages
+# trim failed messages
+def check_buffer(mlist)
   mlist.each do |key, value|
+
+    # look for end of APRS message
+    if value.include? ":RS"
+      puts "End of APRS tag found"
+      # send aprs packet and clear buffer element
+      send_aprsdata(rxbuff,match, aprs_server, station_call, version)
+    end
+
+    # trim failed messages
     if value.length > 50 then
       puts "trimmed #{key}, length was #{value.length}"
       mlist.delete(key)  
     end
+
   end
 end
 
@@ -189,21 +200,11 @@ File::Tail::Logfile.open(ft8log) do |log|
 
         # if there is already data for this freq in buffer
         elsif !match.nil?
-          # puts match
-          # look for end of APRS message
-          if datastr.include? ":RS"
-            puts "End of APRS tag found"
-            rxbuff.store(match,rxbuff[match] + datastr)
-            # send aprs packet and clear buffer element
-            send_aprsdata(rxbuff,match, aprs_server, station_call, version)
-          else
-            # keep appending if we are in the middle of APRS message
-            rxbuff.store(match,rxbuff[match] + datastr)
-          end
-
+          # keep appending if we are in the middle of APRS message
+          rxbuff.store(match,rxbuff[match] + datastr)
         end
 
-      trim_failed(rxbuff)
+      check_buffer(rxbuff)
     end # end if data line
 
   end
