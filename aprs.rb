@@ -95,9 +95,8 @@ class Aprs
       ew = "W"
     end
 
-    # get decimal.minutes val
-    lat_dec = (("0.#{lat.split('.')[1]}".to_f) * 60).round(2)
-    # rjust to ensure 2 digits on left of .
+    # get decimal.minutes val. rjust to ensure 2 digits on left of .
+    lat_dec = ( (("0.#{lat.split('.')[1]}".to_f) * 60).round(2) ).to_s.rjust(5, "0")
     lon_dec = ( (("0.#{lon.split('.')[1]}".to_f) * 60).round(2) ).to_s.rjust(5, "0")
     
     # get int val
