@@ -3,7 +3,7 @@ require 'file/tail'
 require 'socket'
 require 'maidenhead'
 
-station_call = "KI6SSI"
+station_call = "YOURCALL"
 ft8log = "/home/pi/.local/share/FT8Call/ALL.TXT"
 aprs_server = "rotate.aprs2.net"
 version = "0.1"
