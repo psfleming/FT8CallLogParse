@@ -146,8 +146,8 @@ end
 
 # check buffer for complete messages
 # trim failed messages
-def check_buffer(mlist)
-  mlist.each do |key, value|
+def check_buffer(rxbuff, match)
+  rxbuff.each do |key, value|
 
     # look for end of APRS message
     if value.include? ":RS"
@@ -159,13 +159,13 @@ def check_buffer(mlist)
         puts "error sending aprs packet: #{value}"
       end
 
-      mlist.delete(key)
+      rxbuff.delete(key)
     end
 
     # trim failed messages
     if value.length > 50 then
       puts "trimmed #{key}, length was #{value.length}"
-      mlist.delete(key)  
+      rxbuff.delete(key)  
     end
 
   end
@@ -210,7 +210,7 @@ File::Tail::Logfile.open(ft8log) do |log|
           rxbuff.store(match,rxbuff[match] + datastr)
         end
 
-      check_buffer(rxbuff)
+      check_buffer(rxbuff, match)
     end # end if data line
 
   end
