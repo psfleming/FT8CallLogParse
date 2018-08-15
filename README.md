@@ -3,8 +3,8 @@ Log parser for FT8Call that looks for special APRS messages and forwards to APRS
 
 ### Setup 
 Requires Ruby and the following gems:
-1. `sudo gem install file-tail`
-1. `sudo gem install maidenhead`
+1. `file-tail`
+1. `maidenhead`
 
 Edit `station_call` to your station
 
