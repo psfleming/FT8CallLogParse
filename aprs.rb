@@ -101,7 +101,7 @@ class Aprs
     
     # get int val
     lat_int = lat.split('.')[0]
-    lon_int = lon.split('.')[0]
+    lon_int = lon.split('.')[0].to_s.rjust(3, "0")
 
     return "#{lat_int}#{lat_dec}#{ns}/#{lon_int}#{lon_dec}#{ew}"
 
