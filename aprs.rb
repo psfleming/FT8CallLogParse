@@ -7,7 +7,6 @@ require 'maidenhead'
 STATIONCALL = "YOURCALL"
 # make sure this is where your ALL.TXT is located
 FT8LOG = "/home/pi/.local/share/FT8Call/ALL.TXT"
-
 APRSSERVER = "rotate.aprs2.net"
 VERSION = "0.1"
 
